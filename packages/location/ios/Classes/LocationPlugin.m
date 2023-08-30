@@ -112,13 +112,20 @@
       result(@0);
     }
   } else if ([call.method isEqualToString:@"getLocation"]) {
-    if (![CLLocationManager locationServicesEnabled]) {
-      result([FlutterError
-          errorWithCode:@"SERVICE_STATUS_DISABLED"
-                message:@"Failed to get location. Location services disabled"
-                details:nil]);
-      return;
-    }
+    dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+//Background Thread
+if (![CLLocationManager locationServicesEnabled]) {
+result([FlutterError errorWithCode:@"SERVICE_STATUS_DISABLED" message:@"Failed to get location. Location services disabled" details:nil]);
+return;
+}
+});
+    // if (![CLLocationManager locationServicesEnabled]) {
+    //   result([FlutterError
+    //       errorWithCode:@"SERVICE_STATUS_DISABLED"
+    //             message:@"Failed to get location. Location services disabled"
+    //             details:nil]);
+    //   return;
+    // }
     if ([CLLocationManager authorizationStatus] ==
         kCLAuthorizationStatusDenied) {
       // Location services are requested but user has denied
